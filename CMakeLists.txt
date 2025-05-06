@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.14)
 project(biral)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -8,7 +8,7 @@ add_subdirectory(td)
 
 find_package(Threads REQUIRED)
 
-add_executable(biral src/client.cpp)
+add_executable(biral src/master.cpp)
 
 target_link_libraries(biral PRIVATE
     Td::TdJson
@@ -22,4 +22,6 @@ target_compile_options(biral PRIVATE
     -Wpedantic
 )
 
-target_include_directories(biral PRIVATE tdlib)
+target_include_directories(biral PRIVATE
+    tdlib
+)

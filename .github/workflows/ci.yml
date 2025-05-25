@@ -21,10 +21,9 @@ jobs:
         with:
           path: build/td
           key: lib-${{ runner.os }}-${{ hashFiles('td/**') }}
-          retention-days: 30
 
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build buid

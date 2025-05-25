@@ -8,7 +8,11 @@ add_subdirectory(td)
 
 find_package(Threads REQUIRED)
 
-add_executable(biral src/master.cpp)
+add_executable(biral
+    src/main.cpp
+    src/profile.cpp
+    src/config.cpp
+)
 
 target_link_libraries(biral PRIVATE
     Td::TdJson

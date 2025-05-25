@@ -26,4 +26,4 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build buid
+        run: cmake --build build

@@ -54,4 +54,4 @@ class Profile {
 
 };
 
-#endif PROFILE_HPP
+#endif

@@ -13,4 +13,4 @@ class Config {
     int get_timeout() noexcept;
 };
 
-#endif CONFIG_HPP
+#endif

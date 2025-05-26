@@ -4,9 +4,17 @@ on: [push, pull_request]
 
 jobs:
   cmake:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Install gperf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gperf
 
       - name: Cache Td lib
         uses: actions/cache@v4
@@ -18,4 +26,4 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build build

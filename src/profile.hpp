@@ -50,8 +50,8 @@ class Profile {
     void on_authorization_state_phone_number();
     void on_authorization_state_code();
     void on_authorization_state_password();
-    void Profile::on_authorization_state_ready();
+    void on_authorization_state_ready();
 
 };
 
-#endif PROFILE_HPP
+#endif

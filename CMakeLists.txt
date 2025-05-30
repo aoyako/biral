@@ -12,6 +12,7 @@ add_executable(biral
     src/main.cpp
     src/profile.cpp
     src/config.cpp
+    src/event.cpp
 )
 
 target_link_libraries(biral PRIVATE

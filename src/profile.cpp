@@ -2,7 +2,7 @@
 #include "config.hpp"
 
 Profile::Profile(Config cfg) noexcept : config_(cfg) {
-    td::ClientManager::execute(td::td_api::make_object<td::td_api::setLogVerbosityLevel>(config_.get_verbosity_level()));
+    td::ClientManager::execute(td::td_api::make_object<td::td_api::setLogVerbosityLevel>(0));
     client_manager_ = std::make_unique<td::ClientManager>();
     client_id_ = client_manager_->create_client_id();
 }
@@ -16,10 +16,28 @@ void Profile::tick() {
         restart();
     } else if (!are_authorized_) {
         process_response(client_manager_->receive(10));
-    } else if (!has_set_photo_) {
-        has_set_photo_ = true;
-        // set_profile_photo("images.jpg");
-        send_query(td::td_api::make_object<td::td_api::getMe>());
+    } else if (!events.empty()) {
+        std::unique_ptr<Event> event = std::move(events.front());
+        events.pop();
+        switch (event->get_type()) {
+        case SET_PHOTO: {
+            std::unique_ptr<SetPhotoEvent> set_photo_event(
+                dynamic_cast<SetPhotoEvent*>(event.release())
+            );
+            std::cout << "set photo was called with " << set_photo_event->get_photo_path()
+                      << std::endl;
+            break;
+        }
+        default: {
+            std::cerr << "unrecongized event type " << event->get_type() << std::endl;
+            break;
+        }
+        }
+        // std::unique_ptr<
+        // } else if (!has_set_photo_) {
+        //     has_set_photo_ = true;
+        //     // set_profile_photo("images.jpg");
+        //     send_query(td::td_api::make_object<td::td_api::getMe>());
     } else {
         process_response(client_manager_->receive(0.0));
     }
@@ -122,28 +140,28 @@ void Profile::on_authorization_state_parameters() {
 }
 
 void Profile::on_authorization_state_phone_number() {
-        send_query(td::td_api::make_object<td::td_api::setAuthenticationPhoneNumber>(
-            std::getenv("PHONE_NUMBER"), nullptr
-        ));
+    send_query(td::td_api::make_object<td::td_api::setAuthenticationPhoneNumber>(
+        std::getenv("PHONE_NUMBER"), nullptr
+    ));
 }
 
 void Profile::on_authorization_state_code() {
-        std::string code;
-        std::cout << "Code: ";
-        std::cin >> code;
-        send_query(td::td_api::make_object<td::td_api::checkAuthenticationCode>(code));
+    std::string code;
+    std::cout << "Code: ";
+    std::cin >> code;
+    send_query(td::td_api::make_object<td::td_api::checkAuthenticationCode>(code));
 }
 
 void Profile::on_authorization_state_password() {
-        std::string pwd;
-        std::cout << "Password: ";
-        std::cin >> pwd;
-        send_query(td::td_api::make_object<td::td_api::checkAuthenticationPassword>(pwd));
+    std::string pwd;
+    std::cout << "Password: ";
+    std::cin >> pwd;
+    send_query(td::td_api::make_object<td::td_api::checkAuthenticationPassword>(pwd));
 }
 
 void Profile::on_authorization_state_ready() {
-        are_authorized_ = true;
-        std::cout << "Authorized\n";
+    are_authorized_ = true;
+    std::cout << "Authorized\n";
 }
 
 void Profile::on_authorization_state(td::td_api::object_ptr<td::td_api::AuthorizationState> state) {
@@ -176,4 +194,8 @@ void Profile::on_authorization_state(td::td_api::object_ptr<td::td_api::Authoriz
     default:
         std::cerr << "Unhandled auth state: " << state->get_id() << std::endl;
     }
+}
+
+void Profile::send_event(std::unique_ptr<Event> event) {
+    events.emplace(std::move(event));
 }

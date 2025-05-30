@@ -13,7 +13,9 @@
 #include <string>
 #include <td/telegram/td_api.hpp>
 #include <vector>
+#include <queue>
 #include "config.hpp"
+#include "event.hpp"
 
 class Profile {
   public:
@@ -21,6 +23,8 @@ class Profile {
 
     void tick();
     void init();
+
+    void send_event(std::unique_ptr<Event> event);
 
   private:
     using Object = td::td_api::object_ptr<td::td_api::Object>;
@@ -31,8 +35,8 @@ class Profile {
     std::uint64_t current_query_id_{0};
     bool need_restart_{false};
     bool are_authorized_{false};
-    bool has_set_photo_{false};
     Config config_;
+    std::queue<std::unique_ptr<Event>> events;
 
     void restart();
 

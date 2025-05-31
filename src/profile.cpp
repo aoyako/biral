@@ -1,7 +1,7 @@
 #include "profile.hpp"
 #include "config.hpp"
 
-Profile::Profile(Config cfg) noexcept : config_(cfg) {
+Profile::Profile(const Config &cfg) noexcept : config_(cfg) {
     td::ClientManager::execute(td::td_api::make_object<td::td_api::setLogVerbosityLevel>(0));
     client_manager_ = std::make_unique<td::ClientManager>();
     client_id_ = client_manager_->create_client_id();

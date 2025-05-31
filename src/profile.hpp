@@ -19,7 +19,7 @@
 
 class Profile {
   public:
-    Profile(Config cfg) noexcept;
+    Profile(const Config &cfg) noexcept;
 
     void tick();
     void init();

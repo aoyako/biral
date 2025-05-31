@@ -9,8 +9,8 @@ class Config {
   public:
     Config(int verbosity_level, int process_timeout) noexcept;
 
-    int get_verbosity_level() noexcept;
-    int get_timeout() noexcept;
+    int get_verbosity_level() const noexcept;
+    int get_timeout() const noexcept;
 };
 
 #endif

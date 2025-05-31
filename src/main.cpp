@@ -7,7 +7,7 @@ int main() {
     refresher.init();
     refresher.send_event(std::make_unique<SetPhotoEvent>("another/path.png"));
     
-    while (true) {
+    for (int i = 0; i<1000000; ++i) {
         refresher.tick();
     }
     return 0;

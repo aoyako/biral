@@ -20,18 +20,35 @@ void Profile::tick() {
         std::unique_ptr<Event> event = std::move(events.front());
         events.pop();
         switch (event->get_type()) {
-        case SET_PHOTO: {
-            std::unique_ptr<SetPhotoEvent> set_photo_event(
-                dynamic_cast<SetPhotoEvent*>(event.release())
-            );
-            std::cout << "set photo was called with " << set_photo_event->get_photo_path()
-                      << std::endl;
-            break;
-        }
-        default: {
-            std::cerr << "unrecongized event type " << event->get_type() << std::endl;
-            break;
-        }
+            case EventID::REFRESH_PROFILE: {
+                send_query(td::td_api::make_object<td::td_api::getMe>());
+                break;
+            }
+            case EventID::SET_PHOTO: {
+                std::unique_ptr<SetPhotoEvent> set_photo_event(
+                    dynamic_cast<SetPhotoEvent*>(event.release())
+                );
+                std::cout << "set photo was called with " << set_photo_event->get_photo_path()
+                        << std::endl;
+                set_profile_photo(set_photo_event->get_photo_path());
+                send_query(td::td_api::make_object<td::td_api::getMe>());
+                current_photo_id_.reset();
+
+                break;
+            }
+            case EventID::DELETE_PHOTO: {
+                std::cout << "delete photo was called" << std::endl;
+                if (current_photo_id_.has_value()) {
+                    send_query(td::td_api::make_object<td::td_api::deleteProfilePhoto>(current_photo_id_.value()));
+                    current_photo_id_.reset();
+                }
+                send_query(td::td_api::make_object<td::td_api::getMe>());
+                break;
+            }
+            default: {
+                std::cerr << "unhandled event type " << static_cast<int>(event->get_type()) << std::endl;
+                break;
+            }
         }
         // std::unique_ptr<
         // } else if (!has_set_photo_) {
@@ -68,12 +85,16 @@ void Profile::process_response(td::ClientManager::Response response) {
     case td::td_api::user::ID: {
         auto &u = static_cast<const td::td_api::user &>(*response.object);
         if (u.profile_photo_) {
-            auto photo_id = u.profile_photo_->id_;
-            send_query(td::td_api::make_object<td::td_api::deleteProfilePhoto>(photo_id));
-            std::cout << "deleted\n";
+            current_photo_id_.emplace(u.profile_photo_->id_);
         } else {
-            std::cout << "No profile photo to delete\n";
+            current_photo_id_.reset();
         }
+            // auto photo_id = u.profile_photo_->id_;
+            // send_query(td::td_api::make_object<td::td_api::deleteProfilePhoto>(photo_id));
+            // std::cout << "deleted\n";
+        // } else {
+            // std::cout << "No profile photo to delete\n";
+        // }
         break;
     }
 

@@ -3,7 +3,8 @@
 
 #include <string>
 
-enum EventID {
+enum class EventID {
+    REFRESH_PROFILE,
     SET_PHOTO,
     DELETE_PHOTO,
 };
@@ -22,6 +23,18 @@ class SetPhotoEvent final: public Event {
     SetPhotoEvent(const std::string &path) noexcept;
     EventID get_type() override;
     std::string get_photo_path() noexcept;
+};
+
+class DeletePhotoEvent final: public Event {
+  public:
+    DeletePhotoEvent() noexcept;
+    EventID get_type() override;
+};
+
+class RefreshProfileEvent final: public Event {
+  public:
+    RefreshProfileEvent() noexcept;
+    EventID get_type() override;
 };
 
 #endif

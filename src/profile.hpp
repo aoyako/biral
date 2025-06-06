@@ -14,6 +14,7 @@
 #include <td/telegram/td_api.hpp>
 #include <vector>
 #include <queue>
+#include <optional>
 #include "config.hpp"
 #include "event.hpp"
 
@@ -33,6 +34,7 @@ class Profile {
     std::unique_ptr<td::ClientManager> client_manager_;
     std::int32_t client_id_{0};
     std::uint64_t current_query_id_{0};
+    std::optional<std::int64_t> current_photo_id_{};
     bool need_restart_{false};
     bool are_authorized_{false};
     Config config_;
